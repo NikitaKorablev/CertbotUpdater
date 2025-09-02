@@ -2,7 +2,6 @@ import subprocess
 import time
 import os
 import logging
-from datetime import datetime, timedelta
 
 
 RENEW_INTERVAL_DAYS = 90  # 3 месяца
@@ -32,14 +31,16 @@ def init_logger(name: str, log_mod: str = 'a'):
     return logger
 
 
+logger = init_logger(__name__)
 def renew_certificate():
     while True:
         try:
             # Выполняем команду Certbot для перевыпуска сертификата
+            logger.info(f"Запуск процесса обновления сертификата")
             subprocess.run(["certbot", "renew", "--quiet"], check=True)
-            print(f"Сертификат перевыпущен в {datetime.now()}")
+            logger.info(f"Сертификат перевыпущен")
         except subprocess.CalledProcessError as e:
-            print(f"Ошибка при перевыпуске: {e}")
+            logger.error(f"Ошибка при перевыпуске: {e}")
         
         # Ждем 3 месяца
         time.sleep(RENEW_INTERVAL_DAYS * 24 * 60 * 60)
